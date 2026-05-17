@@ -242,8 +242,19 @@ _dns_patch_lock = threading.Lock()
 def _pin_dns(hostname: str, pinned_ip: str, port: int) -> Iterator[None]:
     """
     Temporarily override ``socket.getaddrinfo`` so the named host resolves
-    only to ``pinned_ip``. Other hostnames are forwarded to the real
-    resolver. Restores the original function on exit, even on exception.
+    only to ``pinned_ip``, AND every other hostname looked up during the
+    pinned scope has its resolved IPs validated against
+    :func:`is_safe_ip`. Non-public resolutions raise ``socket.gaierror``,
+    which ``requests`` surfaces as ``ConnectionError`` — the caller's
+    existing error path.
+
+    The fall-through validation is the v2 fix for redirect-target DNS
+    rebinding: ``requests.Session.get(allow_redirects=True)`` may follow
+    30x redirects to a *different* hostname; without this guard, the
+    redirect target was resolved by the unpatched resolver and could
+    land on a private IP.
+
+    Restores the original function on exit, even on exception.
     """
     if not _dns_patch_lock.acquire(blocking=False):
         raise URLSafetyError(
@@ -253,26 +264,18 @@ def _pin_dns(hostname: str, pinned_ip: str, port: int) -> Iterator[None]:
 
     original_getaddrinfo = socket.getaddrinfo
     target = hostname.lower()
-    pinned_record = (
-        socket.AF_INET,
-        socket.SOCK_STREAM,
-        socket.IPPROTO_TCP,
-        "",
-        (pinned_ip, port),
-    )
 
     def patched(host, requested_port, *args, **kwargs):
+        # Branch 1: the originally-pinned host returns the validated IP
+        # without any further resolver call.
         if host and host.lower() == target:
             family = kwargs.get("family", args[0] if args else 0)
             if family in (0, socket.AF_UNSPEC, socket.AF_INET):
-                # Reuse the pinned record regardless of which port the
-                # caller asked for. urllib3 always asks for the same port
-                # the URL specified, which is what we validated.
                 return [(
-                    pinned_record[0],
-                    pinned_record[1],
-                    pinned_record[2],
-                    pinned_record[3],
+                    socket.AF_INET,
+                    socket.SOCK_STREAM,
+                    socket.IPPROTO_TCP,
+                    "",
                     (pinned_ip, requested_port or port),
                 )]
             raise socket.gaierror(
@@ -280,7 +283,24 @@ def _pin_dns(hostname: str, pinned_ip: str, port: int) -> Iterator[None]:
                 f"url_safety: address family {family} refused for pinned "
                 f"IPv4 host {host}",
             )
-        return original_getaddrinfo(host, requested_port, *args, **kwargs)
+
+        # Branch 2: every OTHER hostname (redirect target, embedded
+        # subresource, library bookkeeping) gets resolved by the real
+        # resolver, then each returned record is checked. A single
+        # non-public record fails the entire lookup.
+        result = original_getaddrinfo(host, requested_port, *args, **kwargs)
+        for info in result:
+            sockaddr = info[4]
+            if not sockaddr:
+                continue
+            ip_str = sockaddr[0]
+            if not is_safe_ip(ip_str):
+                raise socket.gaierror(
+                    socket.EAI_FAIL,
+                    f"url_safety: refused to resolve {host!r} to "
+                    f"non-public IP {ip_str}",
+                )
+        return result
 
     socket.getaddrinfo = patched  # type: ignore[assignment]
     try:
