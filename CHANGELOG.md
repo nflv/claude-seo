@@ -46,6 +46,7 @@ Security, cross-platform, and data-accuracy release. Folds the v2.1.0 currency c
 - Docs normalized from bare `python` to `python3`; CLAUDE.md and AGENTS.md script inventory corrected to 50; README test count updated.
 - Corrected the inert `user-invokable` frontmatter key to `user-invocable`.
 - Pinned the Ahrefs, Unlighthouse, and DataForSEO npm packages to exact versions across installers and prewarm steps.
+- Documented the `/seo content-brief` command in the command reference and README, added `/seo flow` to the project command table, and reconciled the command count to the 25 the orchestrator routes.
 
 ### Housekeeping
 

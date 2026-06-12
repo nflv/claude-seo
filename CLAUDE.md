@@ -150,6 +150,7 @@ claude-seo/
 | `/seo page <url>` | Deep single-page analysis |
 | `/seo technical <url>` | Technical SEO audit (9 categories) |
 | `/seo content <url>` | E-E-A-T and content quality analysis |
+| `/seo content-brief <topic>` | Detailed SEO content brief: keywords, outline, internal links |
 | `/seo schema <url>` | Schema.org detection, validation, generation |
 | `/seo sitemap <url>` | XML sitemap analysis or generation |
 | `/seo images <url or optimize>` | Image SEO: on-page audit, SERP analysis, file optimization |
@@ -170,6 +171,7 @@ claude-seo/
 | `/seo drift compare <url>` | Compare current state to stored baseline |
 | `/seo drift history <url>` | Show drift history over time |
 | `/seo ecommerce <url>` | E-commerce SEO: product schema, marketplace intelligence |
+| `/seo flow <url>` | Apply the FLOW framework: stage prompts and structured search-and-conversion output |
 | `/seo firecrawl [command] <url>` | Full-site crawling and site mapping (extension) |
 | `/seo dataforseo [command]` | Live SEO data via DataForSEO MCP (extension) |
 | `/seo image-gen [use-case] <desc>` | AI image generation for SEO assets (extension) |

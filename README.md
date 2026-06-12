@@ -138,7 +138,7 @@ claude
 
 ![Claude SEO sub-skill ecosystem: 25 modules grouped into 8 categories (audit, content, schema, technical, AI search, local + maps, commerce + intl, extensions) around the central orchestrator](assets/sub-skills.svg)
 
-27 user-invocable commands across the orchestrator and 25 sub-skills. Full reference in [docs/COMMANDS.md](docs/COMMANDS.md).
+25 user-invocable `/seo` commands across the orchestrator and its sub-skills. Full reference in [docs/COMMANDS.md](docs/COMMANDS.md).
 
 | Command | Description |
 |---------|-------------|
@@ -146,6 +146,7 @@ claude
 | `/seo page <url>` | Deep single-page analysis |
 | `/seo technical <url>` | Technical SEO audit across 9 categories |
 | `/seo content <url>` | E-E-A-T and content quality analysis |
+| `/seo content-brief <topic>` | Detailed content brief: target keywords, outline, internal links |
 | `/seo schema <url>` | Detect, validate, and generate Schema.org markup |
 | `/seo geo <url>` | AI Overviews / Generative Engine Optimization |
 | `/seo sitemap <url \| generate>` | Analyze or generate XML sitemaps |
@@ -421,7 +422,7 @@ Claude SEO is part of a family of Claude Code skills that interoperate cleanly:
 ## Documentation
 
 - [Installation Guide](docs/INSTALLATION.md)
-- [Commands Reference](docs/COMMANDS.md): 27 commands in depth
+- [Commands Reference](docs/COMMANDS.md): every `/seo` command in depth
 - [Architecture](docs/ARCHITECTURE.md): 3-layer design, auto-discovery, parallel dispatch
 - [Migration v1 → v2](docs/MIGRATION-v1-to-v2.md): breaking changes, six phases of work
 - [MCP Integration](docs/MCP-INTEGRATION.md): extension setup for all 8 servers

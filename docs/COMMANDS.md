@@ -89,6 +89,24 @@ E-E-A-T and content quality analysis.
 
 ---
 
+### `/seo content-brief <topic or url>`
+
+Generate a detailed SEO content brief: target keywords, search intent, heading outline, internal link targets, and competitor angle.
+
+**Example:**
+```
+/seo content-brief "best running shoes for flat feet"
+```
+
+**What it produces:**
+- Primary and secondary target keywords
+- Search intent and audience
+- Section-by-section heading outline
+- Internal link recommendations
+- Competitor content angles to beat
+
+---
+
 ### `/seo schema <url>`
 
 Schema markup detection, validation, and generation.
@@ -539,6 +557,7 @@ Live SEO data via DataForSEO MCP server (extension). 22 commands across 9 API mo
 | `/seo page <url>` | Single page analysis |
 | `/seo technical <url>` | Technical SEO across 9 categories |
 | `/seo content <url>` | E-E-A-T and content quality |
+| `/seo content-brief <topic>` | Detailed content brief: keywords, outline, internal links |
 | `/seo schema <url>` | Schema markup detection, validation, generation |
 | `/seo sitemap <url>` | Sitemap validation |
 | `/seo sitemap generate` | Create new sitemap with industry templates |
