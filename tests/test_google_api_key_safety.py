@@ -114,7 +114,11 @@ def test_nlp_uses_header_and_redacts_errors() -> None:
         return _ErrorResponse(url)
 
     with patch.object(nlp_analyze.requests, "post", side_effect=fake_post):
-        result = nlp_analyze.analyze_text("Kenya has marathon runners.", api_key=SECRET)
+        result = nlp_analyze.analyze_text(
+            "Kenya has marathon runners.",
+            features=["sentiment"],
+            api_key=SECRET,
+        )
 
     assert captured["url"] == nlp_analyze.NLP_ENDPOINT
     assert captured["headers"]["X-Goog-Api-Key"] == SECRET

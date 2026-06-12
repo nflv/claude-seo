@@ -36,6 +36,11 @@ except ImportError:
     from google_auth import get_oauth_credentials, load_config
 
 GSC_SCOPES = ["https://www.googleapis.com/auth/webmasters.readonly"]
+INDEXATION_NOTE = (
+    "Sitemaps API contents[].submitted reflects submitted URL counts only. "
+    "Use the URL Inspection API as the indexation truth for whether specific "
+    "URLs are indexed."
+)
 
 
 def _build_gsc_service():
@@ -229,6 +234,10 @@ def list_sitemaps(site_url: str) -> dict:
     try:
         response = service.sitemaps().list(siteUrl=site_url).execute()
         for sm in response.get("sitemap", []):
+            contents = [
+                {k: v for k, v in item.items() if k != "indexed"}
+                for item in sm.get("contents", [])
+            ]
             result["sitemaps"].append({
                 "path": sm.get("path"),
                 "last_submitted": sm.get("lastSubmitted"),
@@ -237,7 +246,8 @@ def list_sitemaps(site_url: str) -> dict:
                 "type": sm.get("type"),
                 "warnings": sm.get("warnings", 0),
                 "errors": sm.get("errors", 0),
-                "contents": sm.get("contents", []),
+                "contents": contents,
+                "indexation_note": INDEXATION_NOTE,
             })
     except Exception as e:
         result["error"] = f"Error listing sitemaps: {e}"
@@ -360,6 +370,8 @@ def main():
             for sm in result.get("sitemaps", []):
                 status = "pending" if sm.get("is_pending") else "processed"
                 print(f"  {sm['path']} [{status}] errors={sm.get('errors', 0)} warnings={sm.get('warnings', 0)}")
+            if result.get("sitemaps"):
+                print(f"\nNote: {INDEXATION_NOTE}")
         else:
             totals = result.get("totals", {})
             print(f"=== Search Analytics: {prop} ===")

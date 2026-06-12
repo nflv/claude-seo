@@ -144,7 +144,9 @@ Batch inspection from a file (one URL per line). Rate limited to 2,000/day per s
 
 ### `/seo google sitemaps <property>`
 
-List submitted sitemaps with status, errors, warnings.
+List submitted sitemaps with status, errors, warnings. Sitemap contents report
+submitted counts only; URL Inspection API is the indexation truth for whether
+specific URLs are indexed.
 
 **Script:** `python scripts/gsc_query.py sitemaps --property <property> --json`
 
